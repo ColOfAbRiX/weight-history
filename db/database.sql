@@ -1,11 +1,9 @@
+DROP TABLE IF EXISTS weights;
+
 CREATE TABLE weights(
-  id              INT PRIMARY KEY,
-  measure_date    TEXT NOT NULL,
+  measure_date    TEXT PRIMARY KEY,
   weight_kg       REAL NOT NULL,
   fat_percent     REAL,
   water_percent   REAL,
   muscle_percent  REAL
 );
-
-CREATE UNIQUE INDEX weights_measure_date_uindex
-  ON weights(measure_date);
