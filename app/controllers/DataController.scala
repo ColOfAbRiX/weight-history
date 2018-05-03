@@ -14,7 +14,7 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
   /**
     * Builds a response for a succeeded action
     */
-  private def successResponse(data: JsValue): JsValue =
+  private def successResponse(data: JsValue = Json.obj()): JsValue =
     Json.obj(
       "result" -> "success",
       "data" -> data
@@ -34,10 +34,13 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
     */
   private def withJsonValidation(request: Request[JsValue])(f: WeightPoint => Result): Result =
     request.body.validate[WeightPoint] match {
+
       case success: JsSuccess[WeightPoint] =>
         f( success.get )
+
       case JsError( error ) =>
         BadRequest( failedResponse( error.toString() ) )
+
     }
 
   /**
@@ -45,18 +48,12 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
     */
   def getAll(start: Option[String], end: Option[String]) = Action {
 
-    // Fetch the weights
     new WeightPoint.DataAccess(db)
       .fetchAll(start, end) match {
-
-        // All good, return the weights
         case TrySuccess(weights) =>
           Ok(successResponse(Json.toJson(weights)))
-
-        // Error in the DB access
         case TryFailure(e) =>
           InternalServerError(failedResponse(e.getMessage))
-
       }
 
   }
@@ -68,12 +65,8 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
 
     new WeightPoint.DataAccess(db)
       .fetchWeekly(start, end) match {
-
-        // All good, return the weights
         case TrySuccess(weights) =>
           Ok(successResponse(Json.toJson(weights)))
-
-        // Error in the DB access
         case TryFailure(e) =>
           InternalServerError(failedResponse(e.getMessage))
 
@@ -87,14 +80,25 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
   def add() = Action(parse.json) { request =>
     withJsonValidation(request) { weight =>
 
-      // Add the new weight
       new WeightPoint.DataAccess(db).insert(weight) match {
-
-        // All good, return success
         case TrySuccess(_) =>
-          Ok(successResponse(Json.obj()))
+          Ok(successResponse())
+        case TryFailure(e) =>
+          InternalServerError(failedResponse(e.getMessage))
+      }
 
-        // Error in the DB access
+    }
+  }
+
+  /**
+    * ENDPOINT
+    */
+  def modify(date: String) = Action(parse.json) { request =>
+    withJsonValidation(request) { weight =>
+
+      new WeightPoint.DataAccess(db).update(weight) match {
+        case TrySuccess(_) =>
+          Ok(successResponse())
         case TryFailure(e) =>
           InternalServerError(failedResponse(e.getMessage))
 
@@ -106,15 +110,14 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
   /**
     * ENDPOINT
     */
-  def modify(date: String) = Action(parse.json) { request =>
-    Ok(s"Modify $date with ${request.body}")
-  }
-
-  /**
-    * ENDPOINT
-    */
   def remove(date: String) = Action {
-    Ok(s"remove $date")
-  }
 
+    new WeightPoint.DataAccess(db).delete(date) match {
+      case TrySuccess(_) =>
+        Ok(successResponse())
+      case TryFailure(e) =>
+        InternalServerError(failedResponse(e.getMessage))
+    }
+
+  }
 }

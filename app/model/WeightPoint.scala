@@ -3,6 +3,7 @@ package model
 import java.sql.Connection
 
 import anorm._
+import anorm.SqlParser._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.db.Database
@@ -25,15 +26,15 @@ object WeightPoint {
 
   class DataAccess(db: Database) {
 
-    private def dbReader: RowParser[WeightPoint] = RowParser[WeightPoint] {
-
-      case Row(date: String, Some(weight: Double), Some(fat: Double), Some(water: Double), Some(muscle: Double)) =>
-        Success(WeightPoint(date, weight, fat, water, muscle))
-
-      case row =>
-        Error(TypeDoesNotMatch(s"Unexpected row: $row"))
-
-    }
+    private def dbReader: RowParser[WeightPoint] =
+      get[String]("measure_date") ~
+      get[Double]("weight_kg") ~
+      get[Option[Double]]("fat_percent") ~
+      get[Option[Double]]("water_percent") ~
+      get[Option[Double]]("muscle_percent") map {
+        case date ~ weight ~ Some(fat) ~ Some(water) ~ Some(muscle) =>
+          WeightPoint(date, weight, fat, water, muscle)
+      }
 
     private def dbWriter(weight: WeightPoint): Seq[NamedParameter] = List(
       "measure_date" -> weight.date.toString(dateFormat),
@@ -134,14 +135,14 @@ object WeightPoint {
     /**
       * Deletes an existing weight
       */
-    def delete(weight: WeightPoint): Try[_] = {
+    def delete(date: String): Try[_] = {
 
       db.withConnection { implicit conn: Connection =>
         // Building the SQL to delete the point
         val stmt = s"DELETE * FROM weights WHERE measure_date = {measure_date};"
 
         // Query the DB and return the value
-        Try { SQL( stmt ).as( dbReader.* ) }
+        Try { SQL( stmt ).on( "measure_date" -> date ).as( dbReader.* ) }
       }
 
     }
