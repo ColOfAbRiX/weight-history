@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.db.Database
 import play.api.libs.json._
-
+import play.api.libs.functional.syntax._
 import scala.util.Try
 
 /**
@@ -20,7 +20,14 @@ case class WeightPoint(
   fat: Double,
   water: Double,
   muscle: Double
-)
+) {
+
+  /**
+    * Converts the WeightPoint to JSON
+    */
+  val toJson: JsValue = Json.toJson(this)
+
+}
 
 object WeightPoint {
 
@@ -33,7 +40,7 @@ object WeightPoint {
       get[Option[Double]]("water_percent") ~
       get[Option[Double]]("muscle_percent") map {
         case date ~ weight ~ Some(fat) ~ Some(water) ~ Some(muscle) =>
-          WeightPoint(date, weight, fat, water, muscle)
+          WeightPoint.applyRaw(date, weight, fat, water, muscle)
       }
 
     private def dbWriter(weight: WeightPoint): Seq[NamedParameter] = List(
@@ -46,12 +53,9 @@ object WeightPoint {
 
     private def dateFilter(start: Option[String], end: Option[String]) = (start, end) match {
       case (None, None) => ""
-      case (Some(dStart), None) =>
-        s" WHERE measure_date > '$dStart'"
-      case (None, Some(dEnd)) =>
-        s" WHERE measure_date < '$dEnd'"
-      case (Some(dStart), Some(dEnd)) =>
-        s" WHERE measure_date BETWEEN '$dStart' AND '$dEnd'"
+      case (Some(dStart), None) => s" WHERE measure_date > '$dStart'"
+      case (None, Some(dEnd)) => s" WHERE measure_date < '$dEnd'"
+      case (Some(dStart), Some(dEnd)) => s" WHERE measure_date BETWEEN '$dStart' AND '$dEnd'"
     }
 
     /**
@@ -159,43 +163,37 @@ object WeightPoint {
   /**
     * Creates a new WeightPoint given a string representation of the date
     */
-  def apply( date: String, weight: Double, fat: Double, water: Double, muscle: Double ): WeightPoint =
+  def applyRaw( date: String, weight: Double, fat: Double, water: Double, muscle: Double ): WeightPoint =
     WeightPoint(
       dateFromString(date), weight, fat, water, muscle
     )
 
   /**
-    * JSON to and from conversion
+    * Converts JSON to a WeightPoint
     */
-  implicit object JsonFormat extends Format[WeightPoint] {
+  def fromJson(weight: JsValue): WeightPoint = ???
 
-    /** Creates JSON from the object */
-    def writes(weight: WeightPoint): JsValue = Json.obj(
-      "date" -> JsString(weight.date.toString(dateFormat)),
-      "weight" -> JsNumber(weight.weight),
-      "fat" -> JsNumber(weight.fat),
-      "water" -> JsNumber(weight.water),
-      "muscle" -> JsNumber(weight.muscle)
-    )
+  /**
+    * Converts a list of WeightPoints to JSON
+    */
+  def toJson(weights: Seq[WeightPoint]): JsValue = Json.toJson(
+    weights map { _.toJson }
+  )
 
-    /** Creates the object from JSON */
-    def reads(json: JsValue): JsResult[WeightPoint] = {
-      Seq(
-        (json \ "date").asOpt[String],
-        (json \ "weight").asOpt[Double],
-        (json \ "fat").asOpt[Double],
-        (json \ "water").asOpt[Double],
-        (json \ "muscle").asOpt[Double]
-      ) match {
+  implicit val jsonReads: Reads[WeightPoint] = (
+    (JsPath \ "date").read[String] and
+      (JsPath \ "weight").read[Double] and
+      (JsPath \ "fat").read[Double] and
+      (JsPath \ "water").read[Double] and
+      (JsPath \ "muscle").read[Double]
+    )(WeightPoint.applyRaw _)
 
-        case Some(date: String) :: Some(weight: Double) :: Some(fat: Double) :: Some(water: Double) :: Some(muscle: Double) :: Nil =>
-          JsSuccess(WeightPoint(date, weight, fat, water, muscle))
-
-        case _ =>
-          JsError("Missing elements in JSON")
-      }
-    }
-
-  }
+  implicit val jsonWrites: Writes[WeightPoint] = ( weight: WeightPoint ) => Json.obj(
+    "date" -> JsString( weight.date.toString( dateFormat ) ),
+    "weight" -> JsNumber( weight.weight ),
+    "fat" -> JsNumber( weight.fat ),
+    "water" -> JsNumber( weight.water ),
+    "muscle" -> JsNumber( weight.muscle )
+  )
 
 }
