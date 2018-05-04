@@ -125,8 +125,8 @@ object WeightPoint {
       */
     def update(weight: WeightPoint): Try[_] = {
       val params = dbWriter(weight)
-      val sets = params map { p => s"${p.name} = {${p.name}" } mkString ", "
-      val stmt = s"UPDATE weights SET ($sets) WHERE measure_date = {measure_date};"
+      val sets = params map { p => s"${p.name} = {${p.name}}" } mkString ", "
+      val stmt = s"UPDATE weights SET $sets WHERE measure_date = {measure_date};"
 
       // Query the DB
       Try {
@@ -143,10 +143,14 @@ object WeightPoint {
 
       db.withConnection { implicit conn: Connection =>
         // Building the SQL to delete the point
-        val stmt = s"DELETE * FROM weights WHERE measure_date = {measure_date};"
+        val stmt = s"DELETE FROM weights WHERE measure_date = {measure_date};"
 
         // Query the DB and return the value
-        Try { SQL( stmt ).on( "measure_date" -> date ).as( dbReader.* ) }
+        Try {
+          db.withConnection { implicit conn: Connection =>
+            SQL( stmt ).on( "measure_date" -> date ).executeUpdate()
+          }
+        }
       }
 
     }
