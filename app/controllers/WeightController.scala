@@ -1,14 +1,15 @@
 package controllers
 
+import dao.WeightPointDAO
 import javax.inject._
-import model._
-import play.api.db._
+import model.WeightPoint
 import play.api.libs.json._
 import play.api.mvc._
-import scala.util.{ Success => TrySuccess, Failure => TryFailure }
+
+import scala.util.{ Failure => TryFailure, Success => TrySuccess }
 
 @Singleton
-class DataController @Inject()(db: Database, cc: ControllerComponents)
+class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
   extends AbstractController(cc)  {
 
   /**
@@ -38,25 +39,23 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
     * API Endpoint
     */
   def getAll(start: Option[String], end: Option[String]) = Action {
-    new WeightPoint.DataAccess(db)
-      .fetchAll(start, end) match {
-        case TrySuccess(weights) =>
-          Ok(successResponse(WeightPoint.toJson(weights)))
-        case TryFailure(e) =>
-          InternalServerError(failedResponse(e.getMessage))
-      }
+    wd.fetchAll(start, end) match {
+      case TrySuccess(weights) =>
+        Ok(successResponse(WeightPoint.toJson(weights)))
+      case TryFailure(e) =>
+        InternalServerError(failedResponse(e.getMessage))
+    }
   }
 
   /**
     * API Endpoint
     */
   def getWeekly(start: Option[String], end: Option[String]) = Action {
-    new WeightPoint.DataAccess(db)
-      .fetchWeekly(start, end) match {
-        case TrySuccess(weights) =>
-          Ok(successResponse(WeightPoint.toJson(weights)))
-        case TryFailure(e) =>
-          InternalServerError(failedResponse(e.getMessage))
+    wd.fetchWeekly(start, end) match {
+      case TrySuccess(weights) =>
+        Ok(successResponse(WeightPoint.toJson(weights)))
+      case TryFailure(e) =>
+        InternalServerError(failedResponse(e.getMessage))
     }
   }
 
@@ -65,7 +64,7 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
     */
   def add() = Action(parse.json) { request =>
     withJsonValidation(request) { weight =>
-      new WeightPoint.DataAccess(db).insert(weight) match {
+      wd.insert(weight) match {
         case TrySuccess(_) =>
           Ok(successResponse())
         case TryFailure(e) =>
@@ -79,7 +78,7 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
     */
   def modify(date: String) = Action(parse.json) { request =>
     withJsonValidation(request) { weight =>
-      new WeightPoint.DataAccess(db).update(weight) match {
+      wd.update(weight) match {
         case TrySuccess(_) =>
           Ok(successResponse())
         case TryFailure(e) =>
@@ -92,7 +91,7 @@ class DataController @Inject()(db: Database, cc: ControllerComponents)
     * API Endpoint
     */
   def remove(date: String) = Action {
-    new WeightPoint.DataAccess(db).delete(date) match {
+    wd.delete(date) match {
       case TrySuccess(_) =>
         Ok(successResponse())
       case TryFailure(e) =>

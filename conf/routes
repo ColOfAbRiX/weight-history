@@ -3,11 +3,11 @@
 # ~~~~
 
 # API
-GET     /weights/all                controllers.DataController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
-GET     /weights/weekly             controllers.DataController.getWeekly(start: Option[String] ?= None, end: Option[String] ?= None)
-PUT     /weights/add                controllers.DataController.add()
-POST    /weights/modify/:date       controllers.DataController.modify(date: String)
-DELETE  /weights/remove/:date       controllers.DataController.remove(date: String)
+GET     /weights/all                controllers.WeightController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
+GET     /weights/weekly             controllers.WeightController.getWeekly(start: Option[String] ?= None, end: Option[String] ?= None)
+PUT     /weights/add                controllers.WeightController.add()
+POST    /weights/modify/:date       controllers.WeightController.modify(date: String)
+DELETE  /weights/remove/:date       controllers.WeightController.remove(date: String)
 
 # Web UI
 GET     /weights                    controllers.HomeController.index()
