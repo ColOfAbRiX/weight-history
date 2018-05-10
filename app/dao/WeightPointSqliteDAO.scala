@@ -1,5 +1,6 @@
 package dao
 
+import scala.util.Try
 import java.sql.Connection
 
 import anorm.SqlParser.get
@@ -8,7 +9,6 @@ import javax.inject.Inject
 import model.WeightPoint
 import play.api.db.Database
 
-import scala.util.Try
 
 class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
 
@@ -20,6 +20,8 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
       get[Option[Double]]("muscle_percent") map {
       case date ~ weight ~ Some(fat) ~ Some(water) ~ Some(muscle) =>
         WeightPoint.applyRaw(date, weight, fat, water, muscle)
+      case date ~ weight ~ _ ~ _ ~ _ =>
+        WeightPoint.applyRaw(date, weight, 0.0, 0.0, 0.0)
     }
 
   private def dbWriter(weight: WeightPoint): Seq[NamedParameter] = List(
@@ -80,7 +82,7 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
   /**
     * Adds a new weight point
     */
-  def insert(weight: WeightPoint): Try[_] = {
+  def insert(weight: WeightPoint): Try[Unit] = {
     val params = dbWriter(weight)
     val names = params map { _.name } mkString ", "
     val tokens = params map { p => s"{${p.name}}" } mkString ", "
@@ -97,7 +99,7 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
   /**
     * Modifies an existing weight
     */
-  def update(weight: WeightPoint): Try[_] = {
+  def update(weight: WeightPoint): Try[Unit] = {
     val params = dbWriter(weight)
     val sets = params map { p => s"${p.name} = {${p.name}}" } mkString ", "
     val stmt = s"UPDATE weights SET $sets WHERE measure_date = {measure_date};"
@@ -113,7 +115,7 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
   /**
     * Deletes an existing weight
     */
-  def delete(date: String): Try[_] = {
+  def delete(date: String): Try[Unit] = {
 
     db.withConnection { implicit conn: Connection =>
       // Building the SQL to delete the point

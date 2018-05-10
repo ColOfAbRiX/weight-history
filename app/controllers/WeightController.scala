@@ -6,7 +6,7 @@ import model.WeightPoint
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.util.{ Failure => TryFailure, Success => TrySuccess }
+import scala.util.{ Failure, Success }
 
 @Singleton
 class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
@@ -40,9 +40,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
     */
   def getAll(start: Option[String], end: Option[String]) = Action {
     wd.fetchAll(start, end) match {
-      case TrySuccess(weights) =>
+      case Success(weights) =>
         Ok(successResponse(WeightPoint.toJson(weights)))
-      case TryFailure(e) =>
+      case Failure(e) =>
         InternalServerError(failedResponse(e.getMessage))
     }
   }
@@ -52,9 +52,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
     */
   def getWeekly(start: Option[String], end: Option[String]) = Action {
     wd.fetchWeekly(start, end) match {
-      case TrySuccess(weights) =>
+      case Success(weights) =>
         Ok(successResponse(WeightPoint.toJson(weights)))
-      case TryFailure(e) =>
+      case Failure(e) =>
         InternalServerError(failedResponse(e.getMessage))
     }
   }
@@ -65,9 +65,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
   def add() = Action(parse.json) { request =>
     withJsonValidation(request) { weight =>
       wd.insert(weight) match {
-        case TrySuccess(_) =>
+        case Success(_) =>
           Ok(successResponse())
-        case TryFailure(e) =>
+        case Failure(e) =>
           InternalServerError(failedResponse(e.getMessage))
       }
     }
@@ -79,9 +79,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
   def modify(date: String) = Action(parse.json) { request =>
     withJsonValidation(request) { weight =>
       wd.update(weight) match {
-        case TrySuccess(_) =>
+        case Success(_) =>
           Ok(successResponse())
-        case TryFailure(e) =>
+        case Failure(e) =>
           InternalServerError(failedResponse(e.getMessage))
       }
     }
@@ -92,9 +92,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
     */
   def remove(date: String) = Action {
     wd.delete(date) match {
-      case TrySuccess(_) =>
+      case Success(_) =>
         Ok(successResponse())
-      case TryFailure(e) =>
+      case Failure(e) =>
         InternalServerError(failedResponse(e.getMessage))
     }
   }

@@ -15,10 +15,10 @@ case class WeightPoint(
   water: Double,
   muscle: Double
 ) {
-
-  /** Converts the WeightPoint to JSON */
+  /**
+    * Converts the WeightPoint to JSON
+    */
   val toJson: JsValue = Json.toJson(this)
-
 }
 
 object WeightPoint {
