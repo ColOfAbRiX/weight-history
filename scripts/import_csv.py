@@ -30,6 +30,6 @@ with open(args.input_csv, 'r') as file:
         print("Adding: %s" % data)
         response = requests.put(args.endpoint, data=data, headers=headers)
         if response.status_code != 200:
-            print("UNEXPECTED ANSWER")
+            print("  Unexpected answer for data: %s" % data)
             print(response)
             input("Press ENTER to continue to the next entry...")

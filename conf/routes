@@ -3,14 +3,14 @@
 # ~~~~
 
 # API
-GET     /weights/all                controllers.WeightController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
-GET     /weights/weekly             controllers.WeightController.getWeekly(start: Option[String] ?= None, end: Option[String] ?= None)
-PUT     /weights/add                controllers.WeightController.add()
-POST    /weights/modify/:date       controllers.WeightController.modify(date: String)
-DELETE  /weights/remove/:date       controllers.WeightController.remove(date: String)
+GET     /api/all                    controllers.WeightController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
+GET     /api/weekly                 controllers.WeightController.getWeekly(start: Option[String] ?= None, end: Option[String] ?= None)
+PUT     /api/add                    controllers.WeightController.add()
+POST    /api/modify/:date           controllers.WeightController.modify(date: String)
+DELETE  /api/remove/:date           controllers.WeightController.remove(date: String)
 
 # Web UI
-GET     /weights                    controllers.HomeController.index()
+GET     /                           controllers.HomeController.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
