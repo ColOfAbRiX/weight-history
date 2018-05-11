@@ -1,6 +1,7 @@
 package dao
 
 import model.WeightPoint
+
 import scala.util.Try
 
 trait WeightPointDAO {
