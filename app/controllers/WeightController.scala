@@ -5,6 +5,7 @@ import javax.inject._
 import model.WeightPoint
 import play.api.libs.json._
 import play.api.mvc._
+import play.api.Logger
 
 import scala.util.{ Failure, Success }
 
@@ -43,6 +44,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case Success(weights) =>
         Ok(successResponse(WeightPoint.toJson(weights)))
       case Failure(e) =>
+        Logger.error(e.getMessage)
         InternalServerError(failedResponse(e.getMessage))
     }
   }
@@ -55,6 +57,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case Success(weights) =>
         Ok(successResponse(WeightPoint.toJson(weights)))
       case Failure(e) =>
+        Logger.error(e.getMessage)
         InternalServerError(failedResponse(e.getMessage))
     }
   }
@@ -66,8 +69,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
     withJsonValidation(request) { weight =>
       wd.insert(weight) match {
         case Success(_) =>
-          Ok(successResponse())
+          Created(successResponse())
         case Failure(e) =>
+          Logger.error(e.getMessage)
           InternalServerError(failedResponse(e.getMessage))
       }
     }
@@ -80,8 +84,9 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
     withJsonValidation(request) { weight =>
       wd.update(weight) match {
         case Success(_) =>
-          Ok(successResponse())
+          Accepted(successResponse())
         case Failure(e) =>
+          Logger.error(e.getMessage)
           InternalServerError(failedResponse(e.getMessage))
       }
     }
@@ -95,6 +100,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case Success(_) =>
         Ok(successResponse())
       case Failure(e) =>
+        Logger.error(e.getMessage)
         InternalServerError(failedResponse(e.getMessage))
     }
   }

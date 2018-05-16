@@ -1,7 +1,7 @@
 package model
 
-import org.scalatestplus.play._
 import org.joda.time.DateTime
+import org.scalatestplus.play._
 import play.api.libs.json._
 
 class WeightPointTest extends PlaySpec {

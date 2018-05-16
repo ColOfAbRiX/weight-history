@@ -13,6 +13,7 @@ scalaVersion := "2.12.2"
 libraryDependencies ++= Seq(
   jdbc, ehcache, ws, guice,
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.0" % "test",
+  "org.mockito" % "mockito-all" % "1.10.19",
   "org.scalaz" %% "scalaz-core" % "7.2.22",
   "org.scalaz" %% "scalaz-effect" % "7.2.22",
   "org.playframework.anorm" %% "anorm" % "2.6.2",
