@@ -33,6 +33,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case success: JsSuccess[WeightPoint] =>
         f( success.get )
       case JsError( error ) =>
+        Logger.error(s"Invalid JSON for WeightPoint: ${error.toString}")
         BadRequest( failedResponse( error.toString() ) )
     }
 
@@ -44,7 +45,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case Success(weights) =>
         Ok(successResponse(WeightPoint.toJson(weights)))
       case Failure(e) =>
-        Logger.error(e.getMessage)
+        Logger.error(s"Error while fetchAll($start, $end): ${e.getMessage}")
         InternalServerError(failedResponse(e.getMessage))
     }
   }
@@ -57,7 +58,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case Success(weights) =>
         Ok(successResponse(WeightPoint.toJson(weights)))
       case Failure(e) =>
-        Logger.error(e.getMessage)
+        Logger.error(s"Error while getWeekly($start, $end): ${e.getMessage}")
         InternalServerError(failedResponse(e.getMessage))
     }
   }
@@ -71,7 +72,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
         case Success(_) =>
           Created(successResponse())
         case Failure(e) =>
-          Logger.error(e.getMessage)
+          Logger.error(s"Error while add(): ${e.getMessage}")
           InternalServerError(failedResponse(e.getMessage))
       }
     }
@@ -86,7 +87,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
         case Success(_) =>
           Accepted(successResponse())
         case Failure(e) =>
-          Logger.error(e.getMessage)
+          Logger.error(s"Error while modify($date): ${e.getMessage}")
           InternalServerError(failedResponse(e.getMessage))
       }
     }
@@ -100,7 +101,7 @@ class WeightController @Inject()(wd: WeightPointDAO, cc: ControllerComponents)
       case Success(_) =>
         Ok(successResponse())
       case Failure(e) =>
-        Logger.error(e.getMessage)
+        Logger.error(s"Error while remove($date): ${e.getMessage}")
         InternalServerError(failedResponse(e.getMessage))
     }
   }

@@ -2,15 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# API
-GET     /api/all                    controllers.WeightController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
-GET     /api/weekly                 controllers.WeightController.getWeekly(start: Option[String] ?= None, end: Option[String] ?= None)
-PUT     /api/add                    controllers.WeightController.add()
-POST    /api/modify/:date           controllers.WeightController.modify(date: String)
-DELETE  /api/remove/:date           controllers.WeightController.remove(date: String)
-
 # Web UI
 GET     /                           controllers.HomeController.index()
+
+# API
+GET     /api/weight/all             controllers.WeightController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
+GET     /api/weight/weekly          controllers.WeightController.getWeekly(start: Option[String] ?= None, end: Option[String] ?= None)
+PUT     /api/weight                 controllers.WeightController.add()
+POST    /api/weight/:date           controllers.WeightController.modify(date: String)
+DELETE  /api/weight/:date           controllers.WeightController.remove(date: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
