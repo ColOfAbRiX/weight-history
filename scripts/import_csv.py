@@ -29,7 +29,7 @@ with open(args.input_csv, 'r') as file:
         data = json.dumps(data)
         print("Adding: %s" % data)
         response = requests.put(args.endpoint, data=data, headers=headers)
-        if response.status_code != 200:
+        if int(response.status_code / 100) != 2:
             print("  Unexpected answer for data: %s" % data)
-            print(response)
-            input("Press ENTER to continue to the next entry...")
+            print("  Response: %s" % response)
+            raw_input("Press ENTER to continue to the next entry...")

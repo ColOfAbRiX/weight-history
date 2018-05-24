@@ -1,8 +1,15 @@
 package dao
 
-import org.scalatestplus.play.PlaySpec
+import model.WeightPoint
+import play.api.db.Database
 
-class WeightPointSqliteDAOTest extends PlaySpec {
+import scala.util.{ Failure, Success }
+
+class WeightPointSqliteDAOTest extends DatabaseTest {
+
+  private val dao: WeightPointDAO = new WeightPointSqliteDAO(app.injector.instanceOf[Database])
+  private val dummyDate = "2018-01-02 03:04:05"
+  private val dummyWeight = WeightPoint.applyRaw(dummyDate, 6.0, 7.0, 8.0, 9.0)
 
   "fetchAll" must {
 
@@ -40,11 +47,39 @@ class WeightPointSqliteDAOTest extends PlaySpec {
 
   "insert" must {
 
-    "insert a new weight when the weight is not present" in {}
+    "insert a new weight when the weight is not present" in {
+      // Add the weight
+      this.dao.insert(dummyWeight) match {
+        case Success(_) =>
+          // And we expect to find it only once in the DB
+          this.dao.fetchAll(None, None) match {
+            case Success(data) =>
+              data.count(_ == dummyWeight) mustBe 1
+            case Failure(e) => fail(e)
+          }
+        case Failure(e) => fail(e)
+      }
+    }
 
-    "not insert a weight when the weight is already present" in {}
+    "not insert a weight when the weight is already present" in {
+      // Add the weight once...
+      this.dao.insert(dummyWeight) match {
+        case Success(_) =>
+          // ... and twice, but this time it must fail and not insert it
+          this.dao.insert(dummyWeight) match {
+            case Success(_) => fail()
+            case Failure(_) =>
+              // And we expect to find it only once in the DB
+              this.dao.fetchAll(None, None) match {
+                case Success(data) =>
+                  data.count(_ == dummyWeight) mustBe 1
+                case Failure(e) => fail(e)
+              }
 
-    "return a failure when there is a problem in the DB" in {}
+          }
+        case Failure(e) => fail(e)
+      }
+    }
 
   }
 
@@ -67,6 +102,5 @@ class WeightPointSqliteDAOTest extends PlaySpec {
     "return a failure when there is a problem in the DB" in {}
 
   }
-
 
 }

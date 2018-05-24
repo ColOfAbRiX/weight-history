@@ -1,4 +1,6 @@
-DROP TABLE IF EXISTS weights;
+# Users schema
+
+# --- !Ups
 
 CREATE TABLE weights(
   measure_date    TEXT PRIMARY KEY,
@@ -7,3 +9,7 @@ CREATE TABLE weights(
   water_percent   REAL,
   muscle_percent  REAL
 );
+
+# --- !Downs
+
+DROP TABLE IF EXISTS weights;
