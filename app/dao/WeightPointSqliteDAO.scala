@@ -100,7 +100,7 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
   /**
     * Modifies an existing weight
     */
-  def update(weight: WeightPoint): Try[Unit] = {
+  def update(weight: WeightPoint): Try[Int] = {
     val params = dbWriter(weight)
     val sets = params map { p => s"${p.name} = {${p.name}}" } mkString ", "
     val stmt = s"UPDATE weights SET $sets WHERE measure_date = {measure_date};"
@@ -108,7 +108,7 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
     // Query the DB
     Try {
       db.withConnection { implicit conn: Connection =>
-        SQL( stmt ).on( params: _* ).execute()
+        SQL( stmt ).on( params: _* ).executeUpdate()
       }
     }
   }
@@ -116,7 +116,7 @@ class WeightPointSqliteDAO @Inject() (db: Database) extends WeightPointDAO {
   /**
     * Deletes an existing weight
     */
-  def delete(date: String): Try[Unit] = {
+  def delete(date: String): Try[Int] = {
 
     db.withConnection { implicit conn: Connection =>
       // Building the SQL to delete the point

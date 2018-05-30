@@ -143,7 +143,7 @@ class WeightControllerTest extends PlaySpec with MockitoSugar {
   "modify" must {
 
     "return Ok when the DAO returns Success" in {
-      when(mockDao.update(dummyWeight)) thenReturn Success {}
+      when(mockDao.update(dummyWeight)) thenReturn Success { 1 }
 
       val result = weightController
         .modify(dummyDate)
@@ -186,7 +186,7 @@ class WeightControllerTest extends PlaySpec with MockitoSugar {
   "remove" must {
 
     "return Ok when the DAO returns Success" in {
-      when(mockDao.delete(dummyDate)) thenReturn Success {}
+      when(mockDao.delete(dummyDate)) thenReturn Success { 1 }
 
       val result = weightController
         .remove(dummyDate)

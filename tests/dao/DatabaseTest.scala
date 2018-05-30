@@ -1,32 +1,29 @@
 package dao
 
-import org.scalatest.BeforeAndAfter
+import org.joda.time.DateTime
+import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Application
-import play.api.db.Database
-import play.api.db.evolutions.{ Evolutions, SimpleEvolutionsReader }
-import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.db.Databases
+import play.api.db.evolutions.Evolutions
 
-abstract class DatabaseTest extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter {
+class DatabaseTest extends PlaySpec with BeforeAndAfterAll {
+  protected implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
-  implicit override lazy val app: Application = new GuiceApplicationBuilder()
-    .configure("db.default.url" -> sys.env.getOrElse("DB_TEST_URL", "jdbc:sqlite:db/tests.sqlite"))
-    .build
+  // Define the test database
+  protected val db = Databases(
+    name = "tests",
+    driver = "org.sqlite.JDBC",
+    url = "jdbc:sqlite:db/tests.sqlite"
+  )
 
-  before {
-    val db = app.injector.instanceOf[Database]
-
-    // Load the database schema
+  override def beforeAll(): Unit = {
+    super.beforeAll()
     Evolutions.applyEvolutions(db)
-
-    // Insert test data
-    Evolutions.applyEvolutions(db, SimpleEvolutionsReader.forDefault())
   }
 
-  after {
-    val db = app.injector.instanceOf[Database]
+  override def afterAll(): Unit = {
+    super.afterAll()
     Evolutions.cleanupEvolutions(db)
+    db.shutdown()
   }
-
 }
