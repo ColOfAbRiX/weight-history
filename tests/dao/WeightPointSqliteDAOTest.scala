@@ -80,15 +80,72 @@ class WeightPointSqliteDAOTest extends DatabaseTest {
 
   "fetchWeekly" must {
 
-    "return the the weekly weight average when no start and end date are provided" in {}
+    "return the the weekly weight average" when {
 
-    "return the the weekly weight average when only start date is provided" in {}
+      "no start and end date are provided" in {
+        this.dao.fetchWeekly( None, None ) match {
+          case Success( data ) =>
+            data.size mustBe 58
+            data.head mustBe WeightPoint.applyRaw("2017-02-27 00:00:00", 78.95, 0.125, 0.605, 0.434)
+            data.last mustBe WeightPoint.applyRaw("2018-04-30 00:00:00", 77.8, 0.126, 0.605, 0.432)
+          case Failure( e ) => fail( e )
+        }
+      }
 
-    "return the the weekly weight average when only end date is provided" in {}
+    }
 
-    "return the the weekly weight average when both start and end date are provided" in {}
+    "return the the weekly weight average" when {
 
-    "return an empty set when a date out of the set is provided" in {}
+      "only start date is provided" in {
+        this.dao.fetchWeekly(Some("2017-05-01 09:30:00"), None) match {
+          case Success( data ) =>
+            data.size mustBe 49
+            data.head mustBe WeightPoint.applyRaw("2017-05-01 00:00:00", 77.475, 0.117, 0.613, 0.439)
+            data.last mustBe WeightPoint.applyRaw("2018-04-30 00:00:00", 77.8, 0.126, 0.605,  0.432)
+          case Failure( e ) => fail( e )
+        }
+      }
+
+    }
+
+    "return the the weekly weight average" when {
+
+      "only end date is provided" in {
+        this.dao.fetchWeekly(None, Some("2018-02-01 09:30:00")) match {
+          case Success( data ) =>
+            data.size mustBe 45
+            data.head mustBe WeightPoint.applyRaw("2017-02-27 00:00:00", 78.95, 0.125, 0.605, 0.434)
+            data.last mustBe WeightPoint.applyRaw("2018-01-29 00:00:00", 78.167, 0.126, 0.603, 0.437)
+          case Failure( e ) => fail( e )
+        }
+      }
+
+    }
+
+    "return the the weekly weight average" when {
+
+      "both start and end date are provided" in {
+        this.dao.fetchWeekly(Some("2017-05-01 09:30:00"), Some("2018-02-01 09:30:00")) match {
+          case Success( data ) =>
+            data.size mustBe 36
+            data.head mustBe WeightPoint.applyRaw("2017-05-01 00:00:00", 77.475, 0.117, 0.613, 0.439)
+            data.last mustBe WeightPoint.applyRaw("2018-01-29 00:00:00", 78.167, 0.126, 0.603, 0.437)
+          case Failure( e ) => fail( e )
+        }
+      }
+
+    }
+
+    "return an empty set" when {
+
+      "a date out of the set is provided" in {
+        this.dao.fetchAll( Some( "2010-01-01 00:00:00" ), Some( "2010-12-31 23:59:59" ) ) match {
+          case Success( data ) => data.nonEmpty mustBe false
+          case Failure( e ) => fail( e )
+        }
+      }
+
+    }
 
   }
 
@@ -100,6 +157,7 @@ class WeightPointSqliteDAOTest extends DatabaseTest {
         case Success(_) =>
           // And we expect to find it only once in the DB
           checkWeightInDB { _.count( _ == dummyWeight ) mustBe 1 }
+          this.dao.delete(dummyDate)
         case Failure(e) => fail(e)
       }
     }
@@ -114,6 +172,7 @@ class WeightPointSqliteDAOTest extends DatabaseTest {
             case Failure(_) =>
               // And we expect to find it only once in the DB
               checkWeightInDB { _.count( _ == dummyWeight ) mustBe 1 }
+              this.dao.delete(dummyDate)
           }
         case Failure(e) => fail(e)
       }
@@ -136,6 +195,7 @@ class WeightPointSqliteDAOTest extends DatabaseTest {
               // And we expect to find it only once in the DB
               checkWeightInDB { _.count( _ == dummyWeightModified ) mustBe 1 }
               count mustBe 1
+              this.dao.delete(dummyDate)
             case Failure(e) => fail(e)
           }
         case Failure(e) => fail(e)
@@ -148,6 +208,7 @@ class WeightPointSqliteDAOTest extends DatabaseTest {
         case Success(count) =>
           checkWeightInDB { _.count( _ == dummyWeight ) mustBe 0 }
           count mustBe 0
+          this.dao.delete(dummyDate)
         case Failure(e) => fail(e)
       }
     }
