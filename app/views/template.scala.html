@@ -1,11 +1,12 @@
 @(title: String)(content: Html)
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="weightsHistory">
 
   <head>
     <title>@title</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google.com">
     <link rel="shortcut icon" href="@routes.Assets.versioned("images/favicon.png")" type="image/png">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" media="screen">
@@ -46,13 +47,13 @@
       </div>
     </nav>
 
+    <script src="@routes.Assets.versioned("javascripts/jquery.min.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/angular.js")"></script>
+
     <div class="container-fluid">
       @content
     </div>
-
-    <script src="@routes.Assets.versioned("javascripts/jquery.min.js")"></script>
-    <script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
-    <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
   </body>
 
 </html>

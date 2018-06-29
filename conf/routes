@@ -4,6 +4,7 @@
 
 # Web UI
 GET     /                           controllers.HomeController.index()
+GET     /list                       controllers.ListController.index()
 
 # API
 GET     /api/weight/all             controllers.WeightController.getAll(start: Option[String] ?= None, end: Option[String] ?= None)
