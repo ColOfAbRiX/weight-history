@@ -1,0 +1,28 @@
+<form ng-repeat="weight in $ctrl.weights">
+  <div class="form-row">
+    <div class="col-1">
+      <label class="sr-only" for="inlineFormInput">Date</label>
+      <input type="text" class="form-control mb-2" id="date" value="{{ weight.date }}" placeholder="Date" disabled>
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="inlineFormInput">Weight (Kg)</label>
+      <input type="text" class="form-control mb-2" id="weight" value="{{ weight.weight }}" placeholder="Weight (Kg)">
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="inlineFormInput">Fat (%)</label>
+      <input type="text" class="form-control mb-2" id="fat" value="{{ weight.fat }}" placeholder="Fat (%)">
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="inlineFormInput">Water (%)</label>
+      <input type="text" class="form-control mb-2" id="water" value="{{ weight.water }}" placeholder="Water (%)">
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="inlineFormInput">Muscle (%)</label>
+      <input type="text" class="form-control mb-2" id="muscle" value="{{ weight.muscle }}" placeholder="Muscle (%)">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-success">Update</button>
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</form>

@@ -1,6 +1,7 @@
 @template("List of Weights") {
-  <script src="@routes.Assets.versioned("javascripts/app.js")" type="text/javascript"></script>
-  <script src="@routes.Assets.versioned("javascripts/weights-list.component.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.versioned( "javascripts/app.module.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.versioned( "javascripts/weights-list/weights-list.module.js" )" type="text/javascript"></script>
+  <script src="@routes.Assets.versioned( "javascripts/weights-list/weights-list.component.js" )" type="text/javascript"></script>
   <h1>Historical list of weights</h1>
   <weights-list></weights-list>
 }
