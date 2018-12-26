@@ -1,0 +1,10 @@
+TODO
+ - Paginate list of weights
+ - New entry client side
+ - Remove entry client side
+ - Edit entry client side
+ - Make requests asynchronous
+ - Sort list of weights in the UI
+ - Better aggregation filling the missing weeks
+ - Use a route to point to JavaScript
+ - Add caching of results

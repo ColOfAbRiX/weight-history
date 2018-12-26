@@ -1,2 +1,4 @@
-// Define the `weightsList` module
-angular.module('weightsHistory', ['weightsList']);
+// Define the `weightsHistoryApp` module that depends on `weightsListModule`
+angular.module('weightsHistoryApp', [
+    'weightsListModule'
+  ]);

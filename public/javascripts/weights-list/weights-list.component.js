@@ -1,32 +1,52 @@
 angular
-  .module('weightsList')
+  .module('weightsListModule')
   .component('weightsList', {
     templateUrl: '/assets/javascripts/weights-list/weights-list.template.html',
-    controller: function() {
-      this.weights = [{
-        date: 'date #1',
-        weight: 'weight #1',
-        fat: 'fat #1',
-        water: 'water #1',
-        muscle: 'muscle #1'
-      }, {
-        date: 'date #2',
-        weight: 'weight #2',
-        fat: 'fat #2',
-        water: 'water #2',
-        muscle: 'muscle #2'
-      }, {
-        date: 'date #3',
-        weight: 'weight #3',
-        fat: 'fat #3',
-        water: 'water #3',
-        muscle: 'muscle #3'
-      }, {
-        date: 'date #4',
-        weight: 'weight #4',
-        fat: 'fat #4',
-        water: 'water #4',
-        muscle: 'muscle #4'
-      }];
+    controller: function($scope, $http) {
+      let self = this;
+
+      /*
+       Edit or modify a weight
+       */
+      $scope.submitUpdateOrDelete = function(action, currentWeight) {
+        console.log("submitUpdateOrDelete");
+        console.log(currentWeight);
+      };
+
+      /*
+       Add a new weight
+       */
+      $scope.submitNew= function(newWeight) {
+        console.log("submitNew");
+        console.log(newWeight);
+      };
+
+      /*
+       Load the weights from the API
+       */
+      $http.get('/api/weight/all')
+        .then(function(response) {
+          if( response.data.result === "success" ) {
+            // In case of success, extract the response data
+            self.weights = response.data.data.map( item => {
+              item.date = new Date(item.date);
+              return item;
+            });
+            console.log(self.weights);
+          }
+          else {
+            // In case of failure, display the error
+            console.error('Error occurred on the processing: ', response.data.message);
+          }
+        })
+        .catch(function(response) {
+          // Error at HTTP level, just show what happened
+          console.error('Error occurred on the API call:', response.status, response.data);
+        })
+        .finally(function() {
+          // Debugging message
+          console.info('API processing terminated');
+        });
+
     }
   });

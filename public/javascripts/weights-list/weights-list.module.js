@@ -1,2 +1,2 @@
-// Define the `weightsList` module
-angular.module('weightsList', []);
+// Define the `weightsListModule` module
+angular.module('weightsListModule', []);

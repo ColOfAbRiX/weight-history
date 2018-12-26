@@ -1,28 +1,65 @@
-<form ng-repeat="weight in $ctrl.weights">
+<div class="row">
+  <div class="col-1">Date <span class="fa fa-caret-down"></span></div>
+  <div class="col-1">Weight (Kg)</div>
+  <div class="col-1">Fat (%)</div>
+  <div class="col-1">Water (%)</div>
+  <div class="col-1">Muscle (%)</div>
+  <div class="col-2"></div>
+</div>
+
+<!-- "Add new" row -->
+<form ng-submit="submitNew()">
   <div class="form-row">
     <div class="col-1">
-      <label class="sr-only" for="inlineFormInput">Date</label>
-      <input type="text" class="form-control mb-2" id="date" value="{{ weight.date }}" placeholder="Date" disabled>
     </div>
     <div class="col-1">
-      <label class="sr-only" for="inlineFormInput">Weight (Kg)</label>
-      <input type="text" class="form-control mb-2" id="weight" value="{{ weight.weight }}" placeholder="Weight (Kg)">
+      <label class="sr-only">Weight</label>
+      <input type="text" class="form-control mb-2" ng-model="weight" placeholder="Weight">
     </div>
     <div class="col-1">
-      <label class="sr-only" for="inlineFormInput">Fat (%)</label>
-      <input type="text" class="form-control mb-2" id="fat" value="{{ weight.fat }}" placeholder="Fat (%)">
+      <label class="sr-only">Fat</label>
+      <input type="text" class="form-control mb-2" ng-model="fat" placeholder="Fat">
     </div>
     <div class="col-1">
-      <label class="sr-only" for="inlineFormInput">Water (%)</label>
-      <input type="text" class="form-control mb-2" id="water" value="{{ weight.water }}" placeholder="Water (%)">
+      <label class="sr-only">Water</label>
+      <input type="text" class="form-control mb-2" ng-model="water" placeholder="Water">
     </div>
     <div class="col-1">
-      <label class="sr-only" for="inlineFormInput">Muscle (%)</label>
-      <input type="text" class="form-control mb-2" id="muscle" value="{{ weight.muscle }}" placeholder="Muscle (%)">
+      <label class="sr-only">Muscle</label>
+      <input type="text" class="form-control mb-2" ng-model="muscle" placeholder="Muscle">
     </div>
     <div class="col-2">
-      <button type="submit" class="btn btn-success">Update</button>
-      <button type="submit" class="btn btn-danger">Delete</button>
+      <button type="submit" class="btn btn-info" value="new">Add new</button>
+    </div>
+  </div>
+</form>
+
+<!-- "Edit" row -->
+<form ng-repeat="weight in $ctrl.weights" id="editOrDelete_{{ $index }}" novalidate>
+  <div class="form-row">
+    <div class="col-1">
+      <label class="sr-only" for="date_{{ $index }}">Date</label>
+      <input type="text" class="form-control mb-2" id="date_{{ $index }}" value="{{ weight.date | date: 'dd/MM/yy HH:mm' }}" placeholder="Date" disabled>
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="weight_{{ $index }}">Weight</label>
+      <input type="text" class="form-control mb-2" id="weight_{{ $index }}" value="{{ weight.weight }}" placeholder="Weight">
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="fat_{{ $index }}">Fat</label>
+      <input type="text" class="form-control mb-2" id="fat_{{ $index }}" value="{{ weight.fat }}" placeholder="Fat">
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="water_{{ $index }}">Water</label>
+      <input type="text" class="form-control mb-2" id="water_{{ $index }}" value="{{ weight.water }}" placeholder="Water">
+    </div>
+    <div class="col-1">
+      <label class="sr-only" for="muscle_{{ $index }}">Muscle</label>
+      <input type="text" class="form-control mb-2" id="muscle_{{ $index }}" value="{{ weight.muscle }}" placeholder="Muscle">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-success" id="update_{{ $index }}" value="update" ng-click="submitUpdateOrDelete('update', weight)">Update</button>
+      <button type="submit" class="btn btn-danger" id="delete_{{ $index }}" value="delete" ng-click="submitUpdateOrDelete('delete', weight)">Delete</button>
     </div>
   </div>
 </form>
